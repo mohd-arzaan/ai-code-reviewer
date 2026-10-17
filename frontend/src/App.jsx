@@ -8,6 +8,9 @@ import "highlight.js/styles/github-dark.css"
 import axios from 'axios'
 import './App.css'
 
+// CHANGE 1: Backend ka URL dynamic kar diya (Deploy ke liye)
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 // Vite mein import object aa sakta hai, isliye default nikal rahe hain
 const Editor = EditorModule.default || EditorModule
 
@@ -24,8 +27,13 @@ function App() {
 
   async function reviewCode() {
     try {
-      const response = await axios.post('http://localhost:3000/ai/get-review', { code })
-      setReview(response.data)
+      // CHANGE 2: URL mein API_URL use kiya
+      const response = await axios.post(`${API_URL}/ai/get-review`, { code })
+      
+      // CHANGE 3: Response object handle kiya (agar backend se { review: "..." } aata hai)
+      const reviewData = response.data.review || response.data;
+      setReview(String(reviewData))
+      
     } catch (error) {
       console.error("Review fetch failed:", error)
       setReview("Review laate waqt error aaya. Backend chal raha hai ya nahi check karein.")
