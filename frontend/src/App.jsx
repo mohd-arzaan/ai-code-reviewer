@@ -26,19 +26,21 @@ function App() {
   }, [])
 
   async function reviewCode() {
+    setReview("Generating review... Please wait.") // Loading message
     try {
-      // CHANGE 2: URL mein API_URL use kiya
-      const response = await axios.post(`${API_URL}/ai/get-review`, { code })
+      // CHANGE 2: URL mein API_URL use kiya aur timeout 60 seconds kar diya
+      const response = await axios.post(`${API_URL}/ai/get-review`, { code }, { timeout: 60000 })
       
-      // CHANGE 3: Response object handle kiya (agar backend se { review: "..." } aata hai)
       const reviewData = response.data.review || response.data;
       setReview(String(reviewData))
       
     } catch (error) {
       console.error("Review fetch failed:", error)
-      // YAHAN CHANGE KIYA HAI:
-      if (error.message.includes('Network Error') || error.code === 'ECONNABORTED') {
-        setReview("Backend is waking up (Render free tier). Please wait 30-50 seconds and click Review again.");
+      // YAHAN CHANGE KIYA HAI: Better error handling
+      if (error.code === 'ECONNABORTED') {
+        setReview("Request timed out. The backend took too long to respond. Please try again.");
+      } else if (error.message.includes('Network Error')) {
+        setReview("Network error. The backend might be waking up. Please wait 30-50 seconds and try again.");
       } else {
         setReview("Error fetching review: " + (error.response?.data?.error || error.message));
       }
