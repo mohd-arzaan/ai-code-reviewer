@@ -36,7 +36,12 @@ function App() {
       
     } catch (error) {
       console.error("Review fetch failed:", error)
-      setReview("Review laate waqt error aaya. Backend chal raha hai ya nahi check karein.")
+      // YAHAN CHANGE KIYA HAI:
+      if (error.message.includes('Network Error') || error.code === 'ECONNABORTED') {
+        setReview("Backend is waking up (Render free tier). Please wait 30-50 seconds and click Review again.");
+      } else {
+        setReview("Error fetching review: " + (error.response?.data?.error || error.message));
+      }
     }
   }
 
