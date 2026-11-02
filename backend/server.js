@@ -8,7 +8,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 
   // Self-ping to prevent Render free tier sleep
-  if (process.env.NODE_ENV === "production" || process.env.RENDER) {
+  if (process.env.RENDER) {
     const https = require("https");
     const url = process.env.RENDER_EXTERNAL_URL || "https://ai-code-reviewer-hppy.onrender.com";
 
